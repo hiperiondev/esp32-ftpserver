@@ -92,7 +92,7 @@ static char *ftp_scratch_buffer = NULL;
 static char *ftp_cmd_buffer = NULL;
 static uint8_t ftp_nlist = 0;
 static const ftp_cmd_t ftp_cmd_table[] = {
-        { "FEAT" }, { "SYST" }, { "CDUP" }, { "CWD"  }, { "PWD"  },
+        { "FEAT" }, { "SYST" }, { "CDUP" }, { "CWD" },  { "PWD"  },
         { "XPWD" }, { "SIZE" }, { "MDTM" }, { "TYPE" }, { "USER" },
         { "PASS" }, { "PASV" }, { "LIST" }, { "RETR" }, { "STOR" },
         { "DELE" }, { "RMD"  }, { "MKD"  }, { "RNFR" }, { "RNTO" },
@@ -378,7 +378,7 @@ static ftp_result_t ftp_wait_for_connection(int32_t l_sd, int32_t *n_sd, uint32_
             *ip_addr = 0;
             for (int i = 0; i < n_if; i++) {
                 err = esp_netif_get_ip_info(net_if[i], &ip_info);
-                if(err == ESP_ERR_ESP_NETIF_INVALID_PARAMS)
+                if (err == ESP_ERR_ESP_NETIF_INVALID_PARAMS)
                     continue;
 
                 ESP_LOGI(FTP_TAG, "Adapter: 0x%08"PRIx32", 0x%08"PRIx32, ip_info.ip.addr, ip_info.netmask.addr);
@@ -525,10 +525,10 @@ static void ftp_open_child(char *pwd, char *dir) {
     ESP_LOGI(FTP_TAG, "open_child: %s + %s", pwd, dir);
     if (strlen(dir) > 0) {
         if (dir[0] == '/') {
-            // ** absolute path
+            // absolute path
             strcpy(pwd, dir);
         } else {
-            // ** relative path
+            // relative path
             // add trailing '/' if needed
             if ((strlen(pwd) > 1) && (pwd[strlen(pwd) - 1] != '/') && (dir[0] != '/'))
                 strcat(pwd, "/");
@@ -745,14 +745,16 @@ static void ftp_process_cmd(void) {
                 break;
             case E_FTP_CMD_USER:
                 ftp_pop_param(&bufptr, ftp_scratch_buffer, true, true);
-                if (!memcmp(ftp_scratch_buffer, ftp_user, ((strlen(ftp_scratch_buffer)) > (strlen(ftp_user)) ? (strlen(ftp_scratch_buffer)) : (strlen(ftp_user))))) {
+                if (!memcmp(ftp_scratch_buffer, ftp_user,
+                        ((strlen(ftp_scratch_buffer)) > (strlen(ftp_user)) ? (strlen(ftp_scratch_buffer)) : (strlen(ftp_user))))) {
                     ftp_data.loggin.uservalid = true && (strlen(ftp_user) == strlen(ftp_scratch_buffer));
                 }
                 ftp_send_reply(331, NULL);
                 break;
             case E_FTP_CMD_PASS:
                 ftp_pop_param(&bufptr, ftp_scratch_buffer, true, true);
-                if (!memcmp(ftp_scratch_buffer, ftp_pass, ((strlen(ftp_scratch_buffer)) > (strlen(ftp_pass)) ? (strlen(ftp_scratch_buffer)) : (strlen(ftp_pass)))) && ftp_data.loggin.uservalid) {
+                if (!memcmp(ftp_scratch_buffer, ftp_pass,
+                        ((strlen(ftp_scratch_buffer)) > (strlen(ftp_pass)) ? (strlen(ftp_scratch_buffer)) : (strlen(ftp_pass)))) && ftp_data.loggin.uservalid) {
                     ftp_data.loggin.passvalid = true && (strlen(ftp_pass) == strlen(ftp_scratch_buffer));
                     if (ftp_data.loggin.passvalid) {
                         ftp_send_reply(230, NULL);
@@ -860,7 +862,6 @@ static void ftp_process_cmd(void) {
                     strcat(fullname, ftp_path);
                     ESP_LOGI(FTP_TAG, "E_FTP_CMD_DELE fullname=[%s]", fullname);
 
-                    //if (unlink(ftp_path) == 0) {
                     if (unlink(fullname) == 0) {
                         vTaskDelay(20 / portTICK_PERIOD_MS);
                         ftp_send_reply(250, NULL);
@@ -926,7 +927,6 @@ static void ftp_process_cmd(void) {
                 strcat(fullname2, ftp_path);
                 ESP_LOGI(FTP_TAG, "E_FTP_CMD_RNTO fullname2=[%s]", fullname2);
 
-                //if (rename((char *)ftp_data.dBuffer, ftp_path) == 0) {
                 if (rename(fullname, fullname2) == 0) {
                     ftp_send_reply(250, NULL);
                 } else {
@@ -1251,7 +1251,7 @@ static void ftp_task(void *pvParameters) {
 
     time_ms = mp_hal_ticks_ms();
     while (1) {
-    // Calculate time between two ftp_run() calls
+        // Calculate time between two ftp_run() calls
         elapsed = mp_hal_ticks_ms() - time_ms;
         time_ms = mp_hal_ticks_ms();
 

@@ -80,12 +80,8 @@ static esp_netif_t *sta_netif;
 static int littlefs_init(void) {
     ESP_LOGI(TAG, "Initializing LittleFS");
 
-    esp_vfs_littlefs_conf_t conf = {
-            .base_path = MOUNT_POINT,
-            .partition_label = PARTITION_LABEL,
-            .format_if_mount_failed = FORMAT_IF_MOUNT_FAILED,
-            .dont_mount = false
-            };
+    esp_vfs_littlefs_conf_t conf = { .base_path = MOUNT_POINT, .partition_label = PARTITION_LABEL, .format_if_mount_failed = FORMAT_IF_MOUNT_FAILED,
+            .dont_mount = false };
 
     // Use settings defined above to initialize and mount LittleFS filesystem.
     // Note: esp_vfs_littlefs_register is an all-in-one convenience function.
@@ -146,7 +142,7 @@ static void _wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t 
 }
 
 void wifi_connect_sta(const char *ssid, const char *pass) {
-    if(wifi_connected)
+    if (wifi_connected)
         return;
 
     ESP_ERROR_CHECK(esp_netif_init());
@@ -163,11 +159,7 @@ void wifi_connect_sta(const char *ssid, const char *pass) {
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &_wifi_event_handler, NULL, &instance_any_id));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &_wifi_event_handler, NULL, &instance_got_ip));
 
-    wifi_config_t wifi_config = {
-            .sta = {
-                    .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-            },
-    };
+    wifi_config_t wifi_config = { .sta = { .threshold.authmode = WIFI_AUTH_WPA2_PSK, }, };
     memcpy(wifi_config.sta.ssid, ssid, strlen(ssid) > 32 ? 32 : strlen(ssid));
     memcpy(wifi_config.sta.password, pass, strlen(pass) > 32 ? 32 : strlen(pass));
 
@@ -179,13 +171,11 @@ void wifi_connect_sta(const char *ssid, const char *pass) {
 
     /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
      * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
-    EventBits_t bits = xEventGroupWaitBits(
-            s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY
-            );
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+    WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+    pdFALSE,
+    pdFALSE,
+    portMAX_DELAY);
 
     /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
      * happened. */
