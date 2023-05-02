@@ -11,7 +11,7 @@
  *
  * @author Emiliano Gonzalez (egonzalez . hiperion @ gmail . com))
  * @version 0.1
- * @see https://github.com/hiperiondev/esp32-microvium
+ * @see https://github.com/hiperiondev/esp32-ftpserver
  * @date 2023
  * @copyright The MIT License (MIT)
  *
